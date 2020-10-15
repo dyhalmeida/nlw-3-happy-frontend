@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { Map, Marker, TileLayer } from 'react-leaflet';
 import { LeafletMouseEvent } from 'leaflet';
 
@@ -16,6 +16,19 @@ export default function CreateOrphanage() {
   const [instructions, setInstructions] = useState('');
   const [openig_hours, setOpeningHours] = useState('');
   const [open_on_weekends, setOpenOnWeekends] = useState(true);
+  const [images, setImages] = useState<File[]>([]);
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
+
+  const handleSelectImages = (event: ChangeEvent<HTMLInputElement>) => {
+    const { files } = event.target;
+    if (!files) return;
+    const selectedImages = Array.from(files);
+    setImages(selectedImages);
+    const selectedImagesPreview = selectedImages.map((image) =>
+      URL.createObjectURL(image)
+    );
+    setPreviewImages(selectedImagesPreview);
+  };
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -27,6 +40,7 @@ export default function CreateOrphanage() {
       about,
       instructions,
       openig_hours,
+      images,
     });
   };
 
@@ -87,11 +101,20 @@ export default function CreateOrphanage() {
             <div className="input-block">
               <label htmlFor="images">Fotos</label>
 
-              <div className="uploaded-image"></div>
-
-              <button type="button" className="new-image">
-                <FiPlus size={24} color="#15b6d6" />
-              </button>
+              <div className="images-container">
+                {previewImages.map((image) => (
+                  <img key={image} src={image} alt={name} />
+                ))}
+                <label htmlFor="image[]" className="new-image">
+                  <FiPlus size={24} color="#15b6d6" />
+                </label>
+              </div>
+              <input
+                type="file"
+                multiple
+                id="image[]"
+                onChange={handleSelectImages}
+              />
             </div>
           </fieldset>
 
