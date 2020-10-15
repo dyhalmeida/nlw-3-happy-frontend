@@ -1,4 +1,5 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Map, Marker, TileLayer } from 'react-leaflet';
 import { LeafletMouseEvent } from 'leaflet';
 
@@ -8,13 +9,16 @@ import SideBar from '../components/Sidebar';
 import mapMarker from '../utils/mapMarker';
 
 import '../styles/pages/create-orphanage.css';
+import api from '../services/api';
 
 export default function CreateOrphanage() {
+  const history = useHistory();
+
   const [position, setPosition] = useState({ latitude: 0, longitude: 0 });
   const [name, setName] = useState('');
   const [about, setAbout] = useState('');
   const [instructions, setInstructions] = useState('');
-  const [openig_hours, setOpeningHours] = useState('');
+  const [opening_hours, setOpeningHours] = useState('');
   const [open_on_weekends, setOpenOnWeekends] = useState(true);
   const [images, setImages] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
@@ -33,14 +37,20 @@ export default function CreateOrphanage() {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     const { latitude, longitude } = position;
-    console.log({
-      name,
-      latitude,
-      longitude,
-      about,
-      instructions,
-      openig_hours,
-      images,
+
+    const data = new FormData();
+    data.append('name', name);
+    data.append('latitude', String(latitude));
+    data.append('longitude', String(longitude));
+    data.append('about', about);
+    data.append('instructions', instructions);
+    data.append('opening_hours', opening_hours);
+    data.append('open_on_weekends', String(open_on_weekends));
+    images.forEach((image) => data.append('images', image));
+
+    api.post('orphanages', data).then((response) => {
+      alert('Cadastro realizado com sucesso');
+      history.push('/app');
     });
   };
 
@@ -62,7 +72,7 @@ export default function CreateOrphanage() {
             <legend>Dados</legend>
 
             <Map
-              center={[-27.2092052, -49.6401092]}
+              center={[-12.5443141, -38.2954662]}
               style={{ width: '100%', height: 280 }}
               zoom={15}
               onclick={handleClickMap}
@@ -134,7 +144,7 @@ export default function CreateOrphanage() {
               <label htmlFor="opening_hours">Horário de funcionamento</label>
               <input
                 id="opening_hours"
-                value={openig_hours}
+                value={opening_hours}
                 onChange={(event) => setOpeningHours(event.target.value)}
               />
             </div>
