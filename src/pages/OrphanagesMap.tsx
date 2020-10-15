@@ -28,7 +28,9 @@ const OrphanagesMap = () => {
     <div id="page-map">
       <aside>
         <header>
-          <img src={markerSVG} alt="Happy" />
+          <Link to="/">
+            <img src={markerSVG} alt="Happy" />
+          </Link>
           <h2>Escolha um orfanato no mapa</h2>
           <p>Muitas crianças estão esperando a sua visita.</p>
         </header>
@@ -38,15 +40,15 @@ const OrphanagesMap = () => {
         </footer>
       </aside>
 
-      {orphanages.map((orphanage) => (
-        <Map
-          center={[-12.5443141, -38.2954662]}
-          zoom={14.75}
-          style={{ width: '100%', height: '100%' }}
-          key={orphanage.id}
-        >
-          <TileLayer url="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <Map
+        center={[-12.5443141, -38.2954662]}
+        zoom={14.75}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <TileLayer url="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        {orphanages.map((orphanage) => (
           <Marker
+            key={orphanage.id}
             position={[orphanage.latitude, orphanage.longitude]}
             icon={mapMarker}
           >
@@ -62,8 +64,8 @@ const OrphanagesMap = () => {
               </Link>
             </Popup>
           </Marker>
-        </Map>
-      ))}
+        ))}
+      </Map>
 
       <Link to="/orphanages/create" className="create-orphanage">
         <FiPlus size={32} color="#fff" />
